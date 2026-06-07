@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>German Pest Solution – Premium Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#020409;
+  --dark:#060c1a;
+  --dark2:#080f20;
+  --blue:#1d4ed8;
+  --blue2:#2563eb;
+  --blue3:#3b82f6;
+  --glow:#60a5fa;
+  --cyan:#22d3ee;
+  --white:#ffffff;
+  --off:#cbd5e1;
+  --muted:#64748b;
+  --border:rgba(37,99,235,0.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--black);color:var(--off);overflow-x:hidden}
+
+/* ── CUSTOM CURSOR ── */
+#cursor{position:fixed;width:14px;height:14px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .12s,background .3s,width .3s,height .3s;mix-blend-mode:screen;display:none}
+#cursor-ring{position:fixed;width:42px;height:42px;border:1.5px solid rgba(96,165,250,0.55);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease,width .3s,height .3s,border-color .3s;mix-blend-mode:screen;display:none}
+
+/* ── CANVAS PARTICLES ── */
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── GRID ── */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(37,99,235,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(37,99,235,0.05) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ── NOISE ── */
+.noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(48px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-48px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(48px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.delay-1{transition-delay:.1s}
+.delay-2{transition-delay:.2s}
+.delay-3{transition-delay:.3s}
+.delay-4{transition-delay:.4s}
+.delay-5{transition-delay:.5s}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 64px;height:72px;
+  background:rgba(2,4,9,0.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:background .3s;
+}
+.nav-logo{display:flex;align-items:center;gap:14px}
+.nav-logo img{height:38px;width:auto;filter:brightness(1.2)}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.1em;color:var(--white)}
+.logo-text span{color:var(--blue3)}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{
+  color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;transition:color .3s;position:relative;
+}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--blue3);transition:width .3s}
+.nav-links a:hover{color:var(--glow)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  background:transparent;color:var(--white);
+  border:1px solid var(--blue2);padding:10px 28px;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:.8rem;
+  letter-spacing:.08em;text-transform:uppercase;text-decoration:none;
+  cursor:none;transition:all .3s;position:relative;overflow:hidden;
+}
+.nav-cta::before{content:'';position:absolute;inset:0;background:var(--blue2);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.16,1,.3,1);z-index:-1}
+.nav-cta:hover::before{transform:scaleX(1)}
+.nav-cta:hover{border-color:var(--blue3)}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;position:relative;z-index:2;
+  display:grid;grid-template-columns:1.05fr .95fr;gap:60px;
+  align-items:center;padding:100px 64px 60px;
+  overflow:hidden;
+}
+.hero-glow{
+  position:absolute;right:-200px;top:50%;transform:translateY(-50%);
+  width:800px;height:800px;
+  background:radial-gradient(circle,rgba(37,99,235,.15) 0%,transparent 65%);
+  pointer-events:none;animation:breathe 6s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{opacity:.6;transform:translateY(-50%) scale(1)}50%{opacity:1;transform:translateY(-50%) scale(1.08)}}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  border:1px solid rgba(34,211,238,.25);
+  background:rgba(34,211,238,.05);
+  padding:7px 18px;margin-bottom:28px;
+  color:var(--cyan);font-size:.72rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  animation:fadeUp .8s ease both;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.6)}}
+
+.hero-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(3.5rem,5.8vw,6rem);
+  line-height:.97;color:var(--white);
+  margin-bottom:8px;letter-spacing:.02em;
+  animation:fadeUp .8s ease .1s both;
+}
+.hero-title .blue{color:var(--blue3)}
+.hero-title .stroke{
+  -webkit-text-stroke:2px var(--blue2);color:transparent;
+  background:linear-gradient(90deg,var(--blue2),var(--cyan));
+  -webkit-background-clip:text;
+}
+.hero-desc{
+  font-size:1rem;color:var(--muted);line-height:1.8;
+  max-width:480px;margin-bottom:40px;font-weight:300;
+  animation:fadeUp .8s ease .2s both;
+}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;animation:fadeUp .8s ease .3s both}
+.btn-primary{
+  background:var(--blue2);color:var(--white);padding:15px 38px;
+  font-weight:700;font-size:.88rem;letter-spacing:.07em;text-transform:uppercase;
+  text-decoration:none;border:none;cursor:none;
+  position:relative;overflow:hidden;display:inline-block;
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+  transition:transform .3s,box-shadow .3s;
+}
+.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,.15) 50%,transparent 60%);transform:translateX(-100%);transition:transform .5s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(37,99,235,.4)}
+.btn-primary:hover::after{transform:translateX(100%)}
+.btn-secondary{
+  background:transparent;color:var(--off);padding:14px 38px;
+  font-weight:600;font-size:.88rem;letter-spacing:.07em;text-transform:uppercase;
+  text-decoration:none;border:1px solid rgba(255,255,255,.15);cursor:none;
+  display:inline-block;transition:all .3s;
+}
+.btn-secondary:hover{border-color:var(--blue3);color:var(--blue3)}
+
+/* Hero Right */
+.hero-right{position:relative;z-index:2;animation:fadeUp .8s ease .25s both}
+.hero-img-wrap{position:relative}
+.hero-img{
+  width:100%;aspect-ratio:16/10;object-fit:cover;
+  display:block;border:1px solid var(--border);
+  box-shadow:0 0 80px rgba(37,99,235,.25);
+}
+.img-frame{
+  position:absolute;inset:-8px;
+  border:1px solid rgba(37,99,235,.2);pointer-events:none;
+  animation:frameGlow 3s ease-in-out infinite;
+}
+@keyframes frameGlow{0%,100%{box-shadow:inset 0 0 20px rgba(37,99,235,.05)}50%{box-shadow:inset 0 0 40px rgba(37,99,235,.12)}}
+.corner{position:absolute;width:20px;height:20px;border-color:var(--blue3);border-style:solid}
+.corner-tl{top:-8px;left:-8px;border-width:2px 0 0 2px}
+.corner-tr{top:-8px;right:-8px;border-width:2px 2px 0 0}
+.corner-bl{bottom:-8px;left:-8px;border-width:0 0 2px 2px}
+.corner-br{bottom:-8px;right:-8px;border-width:0 2px 2px 0}
+
+.hero-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--border);border:1px solid var(--border);margin-top:16px;
+}
+.h-stat{
+  background:rgba(6,12,26,.95);padding:20px 14px;text-align:center;
+  transition:background .3s;cursor:none;
+}
+.h-stat:hover{background:rgba(37,99,235,.08)}
+.h-stat-n{
+  font-family:'Bebas Neue',sans-serif;font-size:2.2rem;
+  background:linear-gradient(135deg,var(--blue3),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:.05em;line-height:1;
+}
+.h-stat-l{color:var(--muted);font-size:.75rem;margin-top:5px}
+
+/* ── ABOUT ── */
+.about{
+  background:var(--dark);border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:100px 64px;position:relative;z-index:2;
+}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:56px}
+.about-img-wrap{position:relative;padding:20px}
+.about-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;border:1px solid var(--border)}
+.about-corner{position:absolute;width:28px;height:28px;border-color:var(--blue3);border-style:solid}
+.about-corner.tl{top:0;left:0;border-width:2px 0 0 2px}
+.about-corner.tr{top:0;right:0;border-width:2px 2px 0 0}
+.about-corner.bl{bottom:0;left:0;border-width:0 0 2px 2px}
+.about-corner.br{bottom:0;right:0;border-width:0 2px 2px 0}
+.about-tag{
+  position:absolute;bottom:4px;right:4px;
+  background:var(--blue);padding:20px 24px;text-align:center;
+  border:1px solid rgba(255,255,255,.08);
+}
+.about-tag .big{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--white);letter-spacing:.05em}
+.about-tag .sm{color:rgba(255,255,255,.7);font-size:.72rem;margin-top:3px}
+.about-feats{display:flex;flex-direction:column;gap:14px;margin-top:32px}
+.feat{
+  display:flex;gap:16px;align-items:flex-start;
+  padding:18px 20px;border:1px solid var(--border);
+  background:rgba(37,99,235,.03);
+  transition:all .4s cubic-bezier(.16,1,.3,1);cursor:none;
+  position:relative;overflow:hidden;
+}
+.feat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--blue2);transform:scaleY(0);transform-origin:top;transition:transform .4s}
+.feat:hover{border-color:var(--blue2);background:rgba(37,99,235,.08);transform:translateX(6px)}
+.feat:hover::before{transform:scaleY(1)}
+.feat-icon{width:40px;height:40px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem}
+.feat strong{display:block;font-weight:700;font-size:.9rem;color:var(--white);margin-bottom:3px}
+.feat p{color:var(--muted);font-size:.82rem;line-height:1.6}
+
+/* ── S-COMMON ── */
+.s-tag{
+  display:inline-flex;align-items:center;gap:10px;
+  color:var(--blue3);font-size:.72rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;
+}
+.s-tag::before{content:'';width:22px;height:1.5px;background:var(--blue2)}
+.s-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.2rem,3.5vw,3.4rem);
+  color:var(--white);letter-spacing:.04em;line-height:1.05;margin-bottom:14px;
+}
+.s-title span{
+  background:linear-gradient(90deg,var(--blue3),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.s-desc{color:var(--muted);font-size:.93rem;line-height:1.8;max-width:540px}
+
+/* ── SERVICES ── */
+.services{background:var(--black);padding:100px 64px;position:relative;z-index:2}
+.services-hd{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:50px}
+.srv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.srv-card{
+  background:var(--dark);border:1px solid var(--border);
+  overflow:hidden;position:relative;cursor:none;
+  transition:border-color .4s,transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s;
+  group:hover;
+}
+.srv-card:hover{border-color:var(--blue2);transform:translateY(-8px);box-shadow:0 24px 60px rgba(37,99,235,.2)}
+.srv-img-wrap{overflow:hidden;aspect-ratio:16/9;position:relative}
+.srv-img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.16,1,.3,1),filter .4s}
+.srv-card:hover .srv-img{transform:scale(1.08);filter:brightness(1.1) saturate(1.1)}
+.srv-img-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 40%,rgba(6,12,26,.9) 100%);
+}
+.srv-body{padding:22px 20px}
+.srv-name{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:var(--white);margin-bottom:8px}
+.srv-desc{color:var(--muted);font-size:.8rem;line-height:1.65}
+.srv-arrow{
+  position:absolute;top:16px;right:16px;
+  width:32px;height:32px;background:var(--blue);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);font-size:.9rem;
+  opacity:0;transform:scale(.6);
+  transition:opacity .3s,transform .3s;
+}
+.srv-card:hover .srv-arrow{opacity:1;transform:scale(1)}
+
+/* ── PROCESS ── */
+.process{background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:100px 64px;position:relative;z-index:2}
+.p-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:60px;position:relative}
+.p-line{position:absolute;top:34px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--blue2),transparent)}
+.p-step{text-align:center;padding:0 16px;position:relative}
+.p-num{
+  width:70px;height:70px;border-radius:50%;
+  background:var(--dark);border:1.5px solid var(--blue2);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 22px;
+  font-family:'Bebas Neue',sans-serif;font-size:1.6rem;
+  background:linear-gradient(135deg,var(--blue3),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  position:relative;z-index:1;
+  transition:box-shadow .3s;cursor:none;
+  background-clip:text;
+}
+/* rewrite so number is visible */
+.p-num-wrap{
+  width:70px;height:70px;border-radius:50%;
+  background:var(--dark);border:1.5px solid var(--blue2);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 22px;position:relative;z-index:1;
+  transition:box-shadow .4s,border-color .4s;cursor:none;
+}
+.p-step:hover .p-num-wrap{box-shadow:0 0 30px rgba(37,99,235,.5);border-color:var(--cyan)}
+.p-num-inner{
+  font-family:'Bebas Neue',sans-serif;font-size:1.7rem;
+  background:linear-gradient(135deg,var(--blue3),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1;
+}
+.p-title{font-weight:700;font-size:.9rem;color:var(--white);margin-bottom:8px}
+.p-desc{color:var(--muted);font-size:.78rem;line-height:1.7}
+
+/* ── SECTORS ── */
+.sectors{background:var(--black);padding:100px 64px;position:relative;z-index:2}
+.sec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:50px}
+.sec-card{
+  padding:38px 32px;background:var(--dark);
+  border:1px solid var(--border);position:relative;
+  overflow:hidden;cursor:none;
+  transition:all .4s cubic-bezier(.16,1,.3,1);
+}
+.sec-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(37,99,235,.12) 0%,transparent 55%);
+  opacity:0;transition:opacity .4s;
+}
+.sec-card:hover{border-color:var(--blue2);transform:translateY(-6px);box-shadow:0 20px 50px rgba(37,99,235,.15)}
+.sec-card:hover::before{opacity:1}
+.sec-icon{font-size:2rem;margin-bottom:18px;display:block;transition:transform .4s}
+.sec-card:hover .sec-icon{transform:scale(1.15) rotate(-5deg)}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.06em;color:var(--white);margin-bottom:10px}
+.sec-desc{color:var(--muted);font-size:.83rem;line-height:1.7}
+
+/* ── STATS BANNER ── */
+.stats-banner{
+  background:var(--blue);padding:60px 64px;
+  position:relative;z-index:2;overflow:hidden;
+}
+.stats-banner::before{
+  content:'';position:absolute;right:-100px;top:-100px;
+  width:400px;height:400px;border-radius:50%;
+  background:rgba(255,255,255,.04);
+}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;text-align:center}
+.st-n{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--white);letter-spacing:.05em;line-height:1}
+.st-l{color:rgba(255,255,255,.7);font-size:.85rem;margin-top:6px;font-weight:500}
+
+/* ── WHY US ── */
+.whyus{background:var(--dark);border-top:1px solid var(--border);padding:100px 64px;position:relative;z-index:2}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start;margin-top:50px}
+.why-list{display:flex;flex-direction:column}
+.why-item{
+  display:flex;gap:18px;align-items:flex-start;
+  padding:22px 0;border-bottom:1px solid var(--border);
+  cursor:none;transition:padding .3s;
+}
+.why-item:hover{padding-left:8px}
+.why-check{
+  width:28px;height:28px;background:var(--blue);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);font-size:.8rem;margin-top:2px;
+  transition:background .3s;
+}
+.why-item:hover .why-check{background:var(--cyan)}
+.why-txt strong{display:block;font-weight:700;font-size:.9rem;color:var(--white);margin-bottom:4px}
+.why-txt p{color:var(--muted);font-size:.82rem;line-height:1.7}
+.why-visual{background:var(--dark2);border:1px solid var(--border);padding:44px}
+.testi{
+  border-left:2px solid var(--blue2);padding-left:22px;
+  font-size:.98rem;color:var(--off);line-height:1.8;
+  font-style:italic;margin-bottom:28px;
+}
+.testi-name{color:var(--blue3);font-weight:700;font-size:.88rem}
+.testi-role{color:var(--muted);font-size:.78rem;margin-top:4px}
+.why-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:28px;border:1px solid var(--border)}
+.ws{background:var(--dark);padding:22px;text-align:center;cursor:none;transition:background .3s}
+.ws:hover{background:rgba(37,99,235,.08)}
+.ws-n{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;background:linear-gradient(135deg,var(--blue3),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:.05em}
+.ws-l{color:var(--muted);font-size:.75rem;margin-top:4px}
+
+/* ── CONTACT ── */
+.contact{background:var(--dark2);border-top:1px solid var(--border);padding:100px 64px;position:relative;z-index:2}
+.c-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;margin-top:50px;align-items:start}
+.c-info{display:flex;flex-direction:column;gap:20px}
+.c-item{display:flex;gap:14px;align-items:flex-start;cursor:none}
+.c-icon{
+  width:44px;height:44px;background:rgba(37,99,235,.12);
+  border:1px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  transition:background .3s,border-color .3s;
+}
+.c-item:hover .c-icon{background:rgba(37,99,235,.2);border-color:var(--blue2)}
+.c-lbl{display:block;font-weight:700;color:var(--white);font-size:.88rem;margin-bottom:3px}
+.c-val{color:var(--muted);font-size:.85rem}
+.wa-link{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);
+  padding:13px 22px;color:var(--cyan);text-decoration:none;
+  font-weight:600;font-size:.86rem;letter-spacing:.04em;cursor:none;
+  transition:all .3s;
+}
+.wa-link:hover{background:rgba(34,211,238,.15);border-color:var(--cyan)}
+.c-form{display:flex;flex-direction:column;gap:14px}
+.c-form input,.c-form textarea{
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  color:var(--white);padding:13px 16px;
+  font-family:'Outfit',sans-serif;font-size:.9rem;
+  outline:none;transition:border-color .3s,background .3s;width:100%;resize:none;
+}
+.c-form input::placeholder,.c-form textarea::placeholder{color:var(--muted)}
+.c-form input:focus,.c-form textarea:focus{border-color:var(--blue2);background:rgba(37,99,235,.04)}
+.c-btn{
+  background:var(--blue2);color:var(--white);border:none;
+  padding:15px;font-family:'Outfit',sans-serif;font-weight:700;
+  font-size:.88rem;letter-spacing:.07em;text-transform:uppercase;
+  cursor:none;width:100%;position:relative;overflow:hidden;
+  transition:box-shadow .3s;
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+}
+.c-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,.15) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s}
+.c-btn:hover{box-shadow:0 10px 40px rgba(37,99,235,.4)}
+.c-btn:hover::after{transform:translateX(100%)}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--black);border-top:1px solid var(--border);
+  padding:32px 64px;display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:2;
+}
+.f-logo{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;color:var(--blue3)}
+.f-logo span{color:var(--muted)}
+.f-copy{color:rgba(255,255,255,.25);font-size:.78rem}
+.f-socials{display:flex;gap:10px}
+.f-s{
+  width:34px;height:34px;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);text-decoration:none;font-size:.75rem;font-weight:700;
+  cursor:none;transition:all .3s;
+}
+.f-s:hover{border-color:var(--blue2);color:var(--blue3)}
+
+/* ── CLICK RIPPLE ── */
+.ripple{
+  position:fixed;border-radius:50%;
+  background:rgba(96,165,250,0.25);pointer-events:none;z-index:9997;
+  transform:translate(-50%,-50%) scale(0);
+  animation:ripple-out .6s ease-out forwards;
+}
+@keyframes ripple-out{to{transform:translate(-50%,-50%) scale(8);opacity:0}}
+
+/* ── SCROLL PROGRESS ── */
+#progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--blue2),var(--cyan));z-index:9999;width:0%;transition:width .1s}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  nav{padding:0 28px}
+  section,.about,.services,.process,.sectors,.whyus,.contact,.stats-banner{padding:70px 28px}
+  .hero{padding:100px 28px 60px;grid-template-columns:1fr}
+  .hero-right{margin-top:32px}
+  .about-grid,.why-grid,.c-grid{grid-template-columns:1fr;gap:36px}
+  .srv-grid{grid-template-columns:repeat(2,1fr)}
+  .p-steps{grid-template-columns:repeat(3,1fr);gap:24px}
+  .p-line{display:none}
+  .sec-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:28px}
+}
+@media(max-width:640px){
+  .nav-links{display:none}
+  .srv-grid,.sec-grid,.p-steps,.stats-grid{grid-template-columns:1fr}
+  .hero-title{font-size:3rem}
+  .services-hd{flex-direction:column;gap:16px;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress"></div>
+
+<!-- Custom Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Background -->
+<div class="grid-bg"></div>
+<div class="noise"></div>
+<canvas id="particles"></canvas>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">
+    <img src="https://germanpestsolution.com/images/logo.png" alt="Logo" onerror="this.style.display='none'">
+    <div class="logo-text">German <span>Pest</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#sectors">Sectors</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="tel:9711545655" class="nav-cta">📞 Call Now</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="home">
+  <div class="hero-glow"></div>
+  <div class="hero-left">
+    <div class="hero-eyebrow"><div class="dot"></div>Certified · Delhi NCR · Since 2010</div>
+    <h1 class="hero-title">
+      DELHI'S<br>
+      <span class="blue">MOST TRUSTED</span><br>
+      <span class="stroke">PEST EXPERTS</span>
+    </h1>
+    <p class="hero-desc">German Pest Solution delivers eco-friendly, certified pest management for homes, offices, and industries. Safe. Effective. Guaranteed results that last.</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn-primary">Get Free Quote →</a>
+      <a href="#services" class="btn-secondary">View Services</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-wrap">
+      <img src="https://germanpestsolution.com/images/d-banner.jpeg" alt="German Pest Solution" class="hero-img"
+           onerror="this.src='https://germanpestsolution.com/images/about.jpeg'">
+      <div class="img-frame">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="h-stat"><div class="h-stat-n" data-count="5000">0</div><div class="h-stat-l">Happy Clients</div></div>
+      <div class="h-stat"><div class="h-stat-n" data-count="15">0</div><div class="h-stat-l">Years Experience</div></div>
+      <div class="h-stat"><div class="h-stat-n" data-count="20">0</div><div class="h-stat-l">Services Offered</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section class="about" id="about">
+  <div class="s-tag reveal">About Us</div>
+  <div class="about-grid">
+    <div class="about-img-wrap reveal-left">
+      <img src="https://germanpestsolution.com/images/about.jpeg" alt="Team" class="about-img">
+      <div class="about-corner tl"></div><div class="about-corner tr"></div>
+      <div class="about-corner bl"></div><div class="about-corner br"></div>
+      <div class="about-tag"><div class="big">100%</div><div class="sm">Eco-Friendly</div></div>
+    </div>
+    <div class="reveal-right">
+      <h2 class="s-title">PROFESSIONAL PEST CONTROL <span>YOU CAN TRUST</span></h2>
+      <p class="s-desc">At German Pest Solution, we specialize in eco-friendly pest management. Based in South Delhi, our certified team has been protecting homes and businesses since 2010.</p>
+      <div class="about-feats">
+        <div class="feat delay-1"><div class="feat-icon">🏅</div><div><strong>Certified Professionals</strong><p>All technicians are industry-certified with expertise in advanced pest control techniques.</p></div></div>
+        <div class="feat delay-2"><div class="feat-icon">🌿</div><div><strong>Eco-Friendly Treatments</strong><p>Environmentally safe products effective against pests but safe for family and pets.</p></div></div>
+        <div class="feat delay-3"><div class="feat-icon">💰</div><div><strong>Transparent Pricing</strong><p>No hidden costs. Clear upfront quotes with tailored plans matching your exact budget.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section class="services" id="services">
+  <div class="services-hd">
+    <div>
+      <div class="s-tag reveal">Our Services</div>
+      <h2 class="s-title reveal delay-1">COMPLETE PEST <span>MANAGEMENT SOLUTIONS</span></h2>
+    </div>
+    <a href="https://www.germanpestsolution.com/services" target="_blank" class="btn-primary reveal">All Services →</a>
+  </div>
+  <div class="srv-grid">
+    <div class="srv-card reveal delay-1">
+      <div class="srv-img-wrap">
+        <img src="https://germanpestsolution.com/Admin/service_img/Anti%20Termite%20Treatment.jpg" class="srv-img" alt="Anti Termite" onerror="this.parentElement.style.display='none'">
+        <div class="srv-img-overlay"></div>
+      </div>
+      <div class="srv-arrow">→</div>
+      <div class="srv-body"><div class="srv-name">Anti Termite Treatment</div><p class="srv-desc">Pre & post construction termite control using advanced chemical barriers and baiting systems.</p></div>
+    </div>
+    <div class="srv-card reveal delay-2">
+      <div class="srv-img-wrap">
+        <img src="https://germanpestsolution.com/Admin/service_img/COCKROACH%20TREATMENT.jpg" class="srv-img" alt="Cockroach" onerror="this.parentElement.style.display='none'">
+        <div class="srv-img-overlay"></div>
+      </div>
+      <div class="srv-arrow">→</div>
+      <div class="srv-body"><div class="srv-name">Cockroach Treatment</div><p class="srv-desc">Targeted gel bait and residual spray to fully eradicate cockroach colonies from your space.</p></div>
+    </div>
+    <div class="srv-card reveal delay-3">
+      <div class="srv-img-wrap">
+        <img src="https://germanpestsolution.com/Admin/service_img/MOSQUITOES%20CONTROL.jpg" class="srv-img" alt="Mosquito" onerror="this.parentElement.style.display='none'">
+        <div class="srv-img-overlay"></div>
+      </div>
+      <div class="srv-arrow">→</div>
+      <div class="srv-body"><div class="srv-name">Mosquito Control</div><p class="srv-desc">Residual sprays, larvicidal treatment and fogging to eliminate mosquitoes at all life stages.</p></div>
+    </div>
+    <div class="srv-card reveal delay-4">
+      <div class="srv-img-wrap">
+        <img src="https://germanpestsolution.com/Admin/service_img/RODENT%20CONTROL.jpg" class="srv-img" alt="Rodent" onerror="this.parentElement.style.display='none'">
+        <div class="srv-img-overlay"></div>
+      </div>
+      <div class="srv-arrow">→</div>
+      <div class="srv-body"><div class="srv-name">Rodent Control</div><p class="srv-desc">Comprehensive rodent management using traps, bait stations, and structural proofing.</p></div>
+    </div>
+    <div class="srv-card reveal delay-1">
+      <div class="srv-img-wrap">
+        <img src="https://germanpestsolution.com/Admin/service_img/BEDBUGS%20CONTROL.jpg" class="srv-img" alt="Bed Bugs" onerror="this.parentElement.style.display='none'">
+        <div class="srv-img-overlay"></div>
+      </div>
+      <div class="srv-arrow">→</div>
+      <div class="srv-body"><div class="srv-name">Bed Bug Control</div><p class="srv-desc">Thorough heat and chemical treatment to eliminate bed bugs from mattresses and furniture.</p></div>
+    </div>
+    <div class="srv-card reveal delay-2">
+      <div class="srv-img-wrap">
+        <img src="https://germanpestsolution.com/Admin/service_img/BIRDS%20CONTROL.jpg" class="srv-img" alt="Birds" onerror="this.parentElement.style.display='none'">
+        <div class="srv-img-overlay"></div>
+      </div>
+      <div class="srv-arrow">→</div>
+      <div class="srv-body"><div class="srv-name">Birds Control</div><p class="srv-desc">Humane bird deterrent solutions using netting, spikes and repellent systems for buildings.</p></div>
+    </div>
+    <div class="srv-card reveal delay-3">
+      <div class="srv-img-wrap">
+        <img src="https://germanpestsolution.com/Admin/service_img/Weed%20Control%20Service.jpg" class="srv-img" alt="Weed" onerror="this.parentElement.style.display='none'">
+        <div class="srv-img-overlay"></div>
+      </div>
+      <div class="srv-arrow">→</div>
+      <div class="srv-body"><div class="srv-name">Weed Control Service</div><p class="srv-desc">Professional removal of unwanted weeds from gardens, lawns, and outdoor spaces.</p></div>
+    </div>
+    <div class="srv-card reveal delay-4">
+      <div class="srv-img-wrap">
+        <img src="https://germanpestsolution.com/Admin/service_img/General%20Pest%20Control.jpg" class="srv-img" alt="General" onerror="this.parentElement.style.display='none'">
+        <div class="srv-img-overlay"></div>
+      </div>
+      <div class="srv-arrow">→</div>
+      <div class="srv-body"><div class="srv-name">General Pest Control</div><p class="srv-desc">All-in-one solution covering ants, flies, lizards, and all common household pests.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROCESS ── -->
+<section class="process" id="process">
+  <div class="s-tag reveal">How It Works</div>
+  <h2 class="s-title reveal delay-1">OUR SIMPLE <span>5-STEP PROCESS</span></h2>
+  <p class="s-desc reveal delay-2">From your first call to a completely pest-free space — here's exactly how we operate.</p>
+  <div class="p-steps">
+    <div class="p-line"></div>
+    <div class="p-step reveal delay-1"><div class="p-num-wrap"><div class="p-num-inner">1</div></div><div class="p-title">Contact Us</div><p class="p-desc">Call, WhatsApp or fill our form to describe your pest problem and book a visit.</p></div>
+    <div class="p-step reveal delay-2"><div class="p-num-wrap"><div class="p-num-inner">2</div></div><div class="p-title">Inspection</div><p class="p-desc">Our expert visits your site to identify pest type and assess severity of infestation.</p></div>
+    <div class="p-step reveal delay-3"><div class="p-num-wrap"><div class="p-num-inner">3</div></div><div class="p-title">Custom Plan</div><p class="p-desc">We design a tailored eco-friendly treatment plan fitting your needs and budget.</p></div>
+    <div class="p-step reveal delay-4"><div class="p-num-wrap"><div class="p-num-inner">4</div></div><div class="p-title">Treatment</div><p class="p-desc">Certified technicians apply advanced techniques safely and effectively on-site.</p></div>
+    <div class="p-step reveal delay-5"><div class="p-num-wrap"><div class="p-num-inner">5</div></div><div class="p-title">Follow-Up</div><p class="p-desc">We check back to confirm results and share prevention tips for lasting protection.</p></div>
+  </div>
+</section>
+
+<!-- ── SECTORS ── -->
+<section class="sectors" id="sectors">
+  <div class="s-tag reveal">Sectors We Serve</div>
+  <h2 class="s-title reveal delay-1">PEST CONTROL FOR <span>EVERY SPACE</span></h2>
+  <p class="s-desc reveal delay-2">From homes to hospitals — we protect them all with customized, effective approaches.</p>
+  <div class="sec-grid">
+    <div class="sec-card reveal delay-1"><span class="sec-icon">🏠</span><div class="sec-title">Residential</div><p class="sec-desc">Safe and thorough pest control for apartments, villas, and independent homes across Delhi NCR.</p></div>
+    <div class="sec-card reveal delay-2"><span class="sec-icon">🏢</span><div class="sec-title">Commercial</div><p class="sec-desc">Protect your business reputation with discreet, professional pest management for offices and retail.</p></div>
+    <div class="sec-card reveal delay-3"><span class="sec-icon">🏭</span><div class="sec-title">Industrial</div><p class="sec-desc">Comprehensive pest management for factories, warehouses, and large industrial facilities.</p></div>
+    <div class="sec-card reveal delay-4"><span class="sec-icon">🏥</span><div class="sec-title">Healthcare</div><p class="sec-desc">Hygiene-compliant pest control solutions for hospitals, clinics, and healthcare facilities.</p></div>
+    <div class="sec-card reveal delay-5"><span class="sec-icon">🏨</span><div class="sec-title">Hospitality</div><p class="sec-desc">Keep hotels, restaurants, and resorts pest-free to protect guests and your brand image.</p></div>
+    <div class="sec-card reveal"><span class="sec-icon">🎓</span><div class="sec-title">Education</div><p class="sec-desc">Safe, child-friendly pest treatments for schools, colleges, and educational institutions.</p></div>
+  </div>
+</section>
+
+<!-- ── STATS BANNER ── -->
+<div class="stats-banner">
+  <div class="stats-grid">
+    <div class="reveal delay-1"><div class="st-n" data-count="5000">0</div><div class="st-l">Happy Clients Served</div></div>
+    <div class="reveal delay-2"><div class="st-n" data-count="15">0</div><div class="st-l">Years of Experience</div></div>
+    <div class="reveal delay-3"><div class="st-n" data-count="20">0</div><div class="st-l">Specialized Services</div></div>
+    <div class="reveal delay-4"><div class="st-n" data-count="98">0</div><div class="st-l">% Client Satisfaction</div></div>
+  </div>
+</div>
+
+<!-- ── WHY US ── -->
+<section class="whyus" id="whyus">
+  <div class="s-tag reveal">Why Choose Us</div>
+  <h2 class="s-title reveal delay-1">DELHI'S MOST <span>TRUSTED CHOICE</span></h2>
+  <div class="why-grid">
+    <div class="why-list reveal-left">
+      <div class="why-item"><div class="why-check">✓</div><div class="why-txt"><strong>15+ Years of Industry Experience</strong><p>Serving Delhi NCR since 2010 with thousands of successful pest eliminations.</p></div></div>
+      <div class="why-item"><div class="why-check">✓</div><div class="why-txt"><strong>Government Certified Technicians</strong><p>All certifications in place. Government-approved safety protocols followed in every job.</p></div></div>
+      <div class="why-item"><div class="why-check">✓</div><div class="why-txt"><strong>Same-Day Service Available</strong><p>Quick response and same-day visits available for critical infestations.</p></div></div>
+      <div class="why-item"><div class="why-check">✓</div><div class="why-txt"><strong>Warranty on All Treatments</strong><p>All treatments come with a service warranty — satisfaction fully guaranteed.</p></div></div>
+      <div class="why-item"><div class="why-check">✓</div><div class="why-txt"><strong>Zero Hidden Charges</strong><p>Completely transparent pricing. What we quote is exactly what you pay.</p></div></div>
+    </div>
+    <div class="why-visual reveal-right">
+      <p class="testi">German Pest Solution completely transformed our office. Professional, on time, immediate results. Haven't seen a single pest since!</p>
+      <div class="testi-name">Rahul Sharma</div>
+      <div class="testi-role">Business Owner, South Delhi</div>
+      <div class="why-stats">
+        <div class="ws"><div class="ws-n">4.9★</div><div class="ws-l">Google Rating</div></div>
+        <div class="ws"><div class="ws-n">98%</div><div class="ws-l">Satisfaction</div></div>
+        <div class="ws"><div class="ws-n">5000+</div><div class="ws-l">Jobs Done</div></div>
+        <div class="ws"><div class="ws-n">24/7</div><div class="ws-l">Support</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section class="contact" id="contact">
+  <div class="s-tag reveal">Get In Touch</div>
+  <h2 class="s-title reveal delay-1">BOOK YOUR <span>FREE INSPECTION</span></h2>
+  <div class="c-grid">
+    <div class="c-info reveal-left">
+      <p style="color:var(--muted);line-height:1.8;font-size:.93rem;margin-bottom:6px">Ready to get rid of pests for good? Contact us for a free inspection and customized quote. Mon–Sat, 9 AM – 6 PM.</p>
+      <div class="c-item"><div class="c-icon">📞</div><div><span class="c-lbl">Phone / WhatsApp</span><span class="c-val">+91 9711545655 &nbsp;|&nbsp; +91 9870515182</span></div></div>
+      <div class="c-item"><div class="c-icon">✉️</div><div><span class="c-lbl">Email</span><span class="c-val">germanpest2010@gmail.com</span></div></div>
+      <div class="c-item"><div class="c-icon">📍</div><div><span class="c-lbl">Address</span><span class="c-val">Ground Floor, E-48, Lalkuan, Badarpur, South Delhi – 110044</span></div></div>
+      <div class="c-item"><div class="c-icon">🕐</div><div><span class="c-lbl">Working Hours</span><span class="c-val">Monday – Saturday: 9:00 AM – 6:00 PM</span></div></div>
+      <a href="https://wa.me/919711545655?text=I%20want%20to%20know%20more%20about%20your%20service" target="_blank" class="wa-link">💬 Chat on WhatsApp →</a>
+    </div>
+    <div class="c-form reveal-right">
+      <input type="text" placeholder="Your Full Name">
+      <input type="tel" placeholder="Your Phone Number">
+      <input type="text" placeholder="Service Required (e.g. Termite Control)">
+      <input type="text" placeholder="Your Location / Area in Delhi">
+      <textarea rows="4" placeholder="Additional details or message..."></textarea>
+      <button class="c-btn" onclick="alert('Thank you! We will contact you shortly.\nFor urgent queries: 9711545655')">Send Request →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="f-logo">German <span>Pest Solution</span></div>
+  <div class="f-copy">© 2025 German Pest Solution · South Delhi · All Rights Reserved</div>
+  <div class="f-socials">
+    <a href="https://www.facebook.com/share/1HqLJbGkQ3/" target="_blank" class="f-s">FB</a>
+    <a href="https://www.instagram.com/kamal_chaudhary90/" target="_blank" class="f-s">IG</a>
+    <a href="https://youtube.com/@kamalchaudhary32" target="_blank" class="f-s">YT</a>
+    <a href="https://wa.me/919711545655" target="_blank" class="f-s">WA</a>
+  </div>
+</footer>
+
+<script>
+// ── CUSTOM CURSOR (Chrome-compatible) ──
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0,cursorActive=false;
+
+document.addEventListener('mousemove', e => {
+  if(!cursorActive){
+    cursorActive=true;
+    cur.style.display='block';
+    ring.style.display='block';
+    document.body.style.cursor='none';
+    // hide cursor on all interactive elements too
+    document.querySelectorAll('a,button,input,textarea').forEach(el=>el.style.cursor='none');
+  }
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px';
+  cur.style.top=my+'px';
+});
+
+// Hover scale effect
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    cur.style.width='24px'; cur.style.height='24px';
+    cur.style.background='var(--blue3)';
+    ring.style.width='60px'; ring.style.height='60px';
+    ring.style.borderColor='var(--blue3)';
+  });
+  el.addEventListener('mouseleave',()=>{
+    cur.style.width='14px'; cur.style.height='14px';
+    cur.style.background='var(--cyan)';
+    ring.style.width='42px'; ring.style.height='42px';
+    ring.style.borderColor='rgba(96,165,250,0.55)';
+  });
+});
+
+(function animRing(){
+  rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+// ── CLICK RIPPLE ──
+document.addEventListener('click',e=>{
+  const r=document.createElement('div');
+  r.className='ripple';
+  r.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;width:80px;height:80px`;
+  document.body.appendChild(r);
+  setTimeout(()=>r.remove(),700);
+});
+
+// ── SCROLL PROGRESS ──
+const bar=document.getElementById('progress');
+window.addEventListener('scroll',()=>{
+  const pct=window.scrollY/(document.documentElement.scrollHeight-window.innerHeight)*100;
+  bar.style.width=pct+'%';
+});
+
+// ── SCROLL REVEAL ──
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible')}});
+},{threshold:.12});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>observer.observe(el));
+
+// ── COUNTER ANIMATION ──
+function animCount(el,target,suffix=''){
+  let start=0;const dur=2000;const step=16;
+  const inc=target/(dur/step);
+  const timer=setInterval(()=>{
+    start+=inc;
+    if(start>=target){start=target;clearInterval(timer)}
+    el.textContent=Math.floor(start).toLocaleString()+(suffix);
+  },step);
+}
+const countObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el=e.target;
+      const t=parseInt(el.dataset.count);
+      const sfx=el.dataset.suffix||'';
+      animCount(el,t,sfx);
+      countObs.unobserve(el);
+    }
+  });
+},{threshold:.5});
+document.querySelectorAll('[data-count]').forEach(el=>countObs.observe(el));
+
+// ── PARTICLE CANVAS ──
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+for(let i=0;i<60;i++){
+  particles.push({
+    x:Math.random()*window.innerWidth,
+    y:Math.random()*window.innerHeight,
+    vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+    r:Math.random()*1.5+.5,
+    a:Math.random()*.5+.1
+  });
+}
+function drawP(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(96,165,250,${p.a})`;ctx.fill();
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0||p.x>W)p.vx*=-1;
+    if(p.y<0||p.y>H)p.vy*=-1;
+  });
+  // draw connections
+  particles.forEach((a,i)=>{
+    particles.slice(i+1).forEach(b=>{
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<120){
+        ctx.beginPath();
+        ctx.strokeStyle=`rgba(37,99,235,${.15*(1-d/120)})`;
+        ctx.lineWidth=.5;
+        ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      }
+    });
+  });
+  requestAnimationFrame(drawP);
+}
+drawP();
+
+// ── NAV ACTIVE ──
+const sections=document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)cur=s.id});
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.style.color=a.getAttribute('href')==='#'+cur?'var(--glow)':'';
+  });
+});
+</script>
+</body>
+</html>
